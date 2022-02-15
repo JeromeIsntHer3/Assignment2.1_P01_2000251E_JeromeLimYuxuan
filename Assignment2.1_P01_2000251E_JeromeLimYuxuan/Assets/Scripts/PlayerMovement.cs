@@ -5,196 +5,196 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header ("Player Attributes")]
-    [SerializeField]
-    private CharacterController mainCharacterController;
-    [SerializeField]
-    private Animator mainAnimator;
-    public float mainWalkSpeed;
-    public float mainRotationSpeed;
+   [Header("Player Attributes")]
+   [SerializeField]
+   private CharacterController _mainCharacterController;
+   [SerializeField]
+   private Animator _mainAnimator;
+   public float mainWalkSpeed;
+   public float mainRotationSpeed;
 
-    private bool isHealing = false;
-    private bool isAttacking = false;
-    private bool isDead = false;
-    private bool isDef = false;
-    private bool isHit = false;
-    public bool mFollowCameraForward = false;
+   private bool _isHealing = false;
+   private bool _isAttacking = false;
+   private bool _isDead = false;
+   private bool _isDefending = false;
+   private bool _isHit = false;
+   public bool mFollowCameraForward = false;
 
-    //multiplayer complient changes
-    private PhotonView mPhotonView;
+   //multiplayer complient changes
+   private PhotonView mPhotonView;
 
-    void Start()
-    {
-        mPhotonView = gameObject.GetComponent<PhotonView>();
-    }
+   void Start()
+   {
+      mPhotonView = gameObject.GetComponent<PhotonView>();
+   }
 
-    void Update()
-    {
-        if (mPhotonView == null)
-        {
-            GenInputs();
-            return;
-        }
-        else
-        {
-            // Chnages made to port this script to be multiplayer compliant.
-            if (!mPhotonView.IsMine) return;
-            GenInputs();
-        }
-    }
+   void Update()
+   {
+      if (mPhotonView == null)
+      {
+         GenInputs();
+         return;
+      }
+      else
+      {
+         // Chnages made to port this script to be multiplayer compliant.
+         if (!mPhotonView.IsMine) return;
+         GenInputs();
+      }
+   }
 
-    void GenInputs()
-    {
-        if (!isHealing && !isAttacking && !isDead && !isDef && !isHit)
-        {
-            Move();
-        }
-        HandleInputs();
-    }
+   void GenInputs()
+   {
+      if (!_isHealing && !_isAttacking && !_isDead && !_isDefending && !_isHit)
+      {
+         Movement();
+      }
+      SpecialInputs();
+   }
 
 
-    void HandleInputs()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if(!isDead)
+   void SpecialInputs()
+   {
+      if (Input.GetKeyDown(KeyCode.Space))
+      {
+         if (!_isDead)
             Jump();
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            Attack1();
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            StopAttack1();
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            Attack2();
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse1))
-        {
-            StopAttack2();
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            StartCoroutine(Heal());
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            if(!isDead)
+      }
+      if (Input.GetKeyDown(KeyCode.Mouse0))
+      {
+         Attack1();
+      }
+      if (Input.GetKeyUp(KeyCode.Mouse0))
+      {
+         StopAttack1();
+      }
+      if (Input.GetKeyDown(KeyCode.Mouse1))
+      {
+         Attack2();
+      }
+      if (Input.GetKeyUp(KeyCode.Mouse1))
+      {
+         StopAttack2();
+      }
+      if (Input.GetKeyDown(KeyCode.E))
+      {
+         StartCoroutine(Heal());
+      }
+      if (Input.GetKeyDown(KeyCode.P))
+      {
+         if (!_isDead)
             Die();
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            if(isDead)
+      }
+      if (Input.GetKeyDown(KeyCode.O))
+      {
+         if (_isDead)
             StartCoroutine(Recover());
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse2))
-        {
-            Defend();
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse2))
-        {
-            StopDefending();
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Hit();
-        }
-        if (Input.GetKeyUp(KeyCode.I))
-        {
-            StopHit();
-        }
-    }
+      }
+      if (Input.GetKeyDown(KeyCode.Mouse2))
+      {
+         Defend();
+      }
+      if (Input.GetKeyUp(KeyCode.Mouse2))
+      {
+         StopDefending();
+      }
+      if (Input.GetKeyDown(KeyCode.I))
+      {
+         Hit();
+      }
+      if (Input.GetKeyUp(KeyCode.I))
+      {
+         StopHit();
+      }
+   }
 
-    private void Move()
-    {
-        float hInput = Input.GetAxis("Horizontal");
-        float vInput = Input.GetAxis("Vertical");
+   private void Movement()
+   {
+      float hInput = Input.GetAxis("Horizontal");
+      float vInput = Input.GetAxis("Vertical");
 
-        float speed = mainWalkSpeed;
+      float speed = mainWalkSpeed;
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            speed = mainWalkSpeed * 2.0f;
-        }
+      if (Input.GetKey(KeyCode.LeftShift))
+      {
+         speed = mainWalkSpeed * 2.0f;
+      }
 
-        if (mainAnimator == null) return;
+      if (_mainAnimator == null) return;
 
-        transform.Rotate(0.0f, hInput * mainRotationSpeed * Time.deltaTime, 0.0f);
+      transform.Rotate(0.0f, hInput * mainRotationSpeed * Time.deltaTime, 0.0f);
 
-        Vector3 forward =
-            transform.TransformDirection(Vector3.forward).normalized;
-        forward.y = 0.0f;
+      Vector3 forward =
+          transform.TransformDirection(Vector3.forward).normalized;
+      forward.y = 0.0f;
 
-        mainCharacterController.Move(forward * vInput * speed * Time.deltaTime);
+      _mainCharacterController.Move(forward * vInput * speed * Time.deltaTime);
 
+      _mainAnimator.SetFloat("Horizontal", 0);
+      _mainAnimator.SetFloat("BacknForth", vInput * speed / 2.0f * mainWalkSpeed);
+   }
 
-        mainAnimator.SetFloat("Horizontal", 0);
-        mainAnimator.SetFloat("BacknForth", vInput * speed / 2.0f * mainWalkSpeed);
-    }
-    //Animator Parameters
-    private void Jump()
-    {
-        mainAnimator.SetTrigger("Jump");
-    }
-    private void Attack1()
-    {
-        mainAnimator.SetBool("Attack1", true);
-        isAttacking = true;
-    }
-    private void Attack2()
-    {
-        mainAnimator.SetBool("Attack2", true);
-        isAttacking = true;
-    }
-    private void StopAttack1()
-    {
-        mainAnimator.SetBool("Attack1", false);
-        isAttacking = false;
-    }
-    private void StopAttack2()
-    {
-        mainAnimator.SetBool("Attack2", false);
-        isAttacking = false;
-    }
-    private void Die()
-    {
-        mainAnimator.SetTrigger("Die");
-        isDead = true;
-    }
-    private void Defend()
-    {
-        mainAnimator.SetBool("Defend", true);
-        isDef = true;
-    }
-    private void StopDefending()
-    {
-        mainAnimator.SetBool("Defend", false);
-        isDef = false;
-    }
-    private void Hit()
-    {
-        mainAnimator.SetBool("Hit",true);
-        isHit = true;
-    }
-    private void StopHit()
-    {
-        mainAnimator.SetBool("Hit", false);
-        isHit = false;
-    }
-    IEnumerator Recover()
-    {
-        mainAnimator.SetTrigger("Recover");
-        yield return new WaitForSeconds(1.15f);
-        isDead = false;
-    }
-    IEnumerator Heal()
-    {
-        isHealing = true;
-        mainAnimator.SetTrigger("Heal");
-        yield return new WaitForSeconds(2.4f);
-        isHealing = false;
-    }
+   //Animator Functions
+   private void Jump()
+   {
+      _mainAnimator.SetTrigger("Jump");
+   }
+   private void Attack1()
+   {
+      _mainAnimator.SetBool("Attack1", true);
+      _isAttacking = true;
+   }
+   private void Attack2()
+   {
+      _mainAnimator.SetBool("Attack2", true);
+      _isAttacking = true;
+   }
+   private void StopAttack1()
+   {
+      _mainAnimator.SetBool("Attack1", false);
+      _isAttacking = false;
+   }
+   private void StopAttack2()
+   {
+      _mainAnimator.SetBool("Attack2", false);
+      _isAttacking = false;
+   }
+   private void Die()
+   {
+      _mainAnimator.SetTrigger("Die");
+      _isDead = true;
+   }
+   private void Defend()
+   {
+      _mainAnimator.SetBool("Defend", true);
+      _isDefending = true;
+   }
+   private void StopDefending()
+   {
+      _mainAnimator.SetBool("Defend", false);
+      _isDefending = false;
+   }
+   private void Hit()
+   {
+      _mainAnimator.SetBool("Hit", true);
+      _isHit = true;
+   }
+   private void StopHit()
+   {
+      _mainAnimator.SetBool("Hit", false);
+      _isHit = false;
+   }
+   IEnumerator Recover()
+   {
+      _mainAnimator.SetTrigger("Recover");
+      yield return new WaitForSeconds(1.15f);
+      _isDead = false;
+   }
+   IEnumerator Heal()
+   {
+      _isHealing = true;
+      _mainAnimator.SetTrigger("Heal");
+      yield return new WaitForSeconds(2.4f);
+      _isHealing = false;
+   }
 }

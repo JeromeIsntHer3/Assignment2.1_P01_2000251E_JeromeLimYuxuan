@@ -6,37 +6,37 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-  // We are going to add the button click 
-  // from script instead of doing it from 
-  // the Unity Editor.
-  [SerializeField]
-  Button ButtonSinglePlayer;
-  [SerializeField]
-  Button ButtonMultiPlayer;
+   // We are going to add the button click 
+   // from script instead of doing it from 
+   // the Unity Editor.
+   [SerializeField]
+   Button _buttonSinglePlayer;
+   [SerializeField]
+   Button _buttonMultiPlayer;
 
-  private void Start()
-  {
-    ButtonSinglePlayer.onClick.AddListener(
-      delegate ()
-      {
-        OnClick_SinglePlayer();
-      });
+   private void Start()
+   {
+      _buttonSinglePlayer.onClick.AddListener(
+        delegate ()
+        {
+           OnClick_SinglePlayer();
+        });
 
-    ButtonMultiPlayer.onClick.AddListener(
-      delegate ()
-      {
-        OnClick_MultiPlayer();
-      });
-  }
+      _buttonMultiPlayer.onClick.AddListener(
+        delegate ()
+        {
+           OnClick_MultiPlayer();
+        });
+   }
 
-  public void OnClick_SinglePlayer()
-  {
-    Debug.Log("Loading Single Player Scene");
-    SceneManager.LoadScene("SinglePlayer");
-  }
-  public void OnClick_MultiPlayer()
-  {
-    Debug.Log("Loading Multiplayer Launcher Scene");
-    SceneManager.LoadScene("MultiPlayerLauncher");
-  }
+   public void OnClick_SinglePlayer()
+   {
+      Debug.Log("Loading Single Player Scene");
+      SceneManager.LoadScene("SinglePlayer");
+   }
+   public void OnClick_MultiPlayer()
+   {
+      Debug.Log("Loading Multiplayer Launcher Scene");
+      SceneManager.LoadScene("MultiPlayerLauncher");
+   }
 }

@@ -2202,10 +2202,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31b7c752366d7b9408beaa480a767925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCharacterController: {fileID: 2183971419736842020}
-  mainAnimator: {fileID: 2183971418230635187}
+  _mainCharacterController: {fileID: 2183971419736842020}
+  _mainAnimator: {fileID: 2183971418230635187}
   mainWalkSpeed: 2
   mainRotationSpeed: 90
+  mFollowCameraForward: 0
 --- !u!143 &2183971419736842020
 CharacterController:
   m_ObjectHideFlags: 0
